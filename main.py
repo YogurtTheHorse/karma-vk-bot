@@ -52,7 +52,7 @@ if __name__ == '__main__':
                              required=True,
                              help='VK secret')
     args_parser.add_argument('--vk_group', '-g',
-                             type=str,
+                             type=int,
                              dest='vk_group',
                              required=True,
                              help='VK group id')
