@@ -1,5 +1,5 @@
+vk_api
 flask
 requests
 mongoengine
 extras-mongoengine
-
