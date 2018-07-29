@@ -21,7 +21,7 @@ def create_app(config: Dict = None) -> Flask:
     def handle_webhook_post():
         vk_json = request.get_json(force=True)
         if vk_json.get('secret') != app.config['vk_secret']:
-            logger.warning(f'Got update from vk with no/wrong secret: {request.get_data())}')
+            logger.warning(f'Got update from vk with no/wrong secret: {request.get_data()}')
             abort(403)
             return
 
