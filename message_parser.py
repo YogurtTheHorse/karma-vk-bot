@@ -1,3 +1,6 @@
+from typing import Callable
+
+
 class CommandDescription:
     def __init__(self, command_name: str, action, help_message: str, args_description: str=None):
         self.name = command_name
@@ -26,7 +29,7 @@ class MessageParser(object):
 
         return '\n\n'.join(infos)
 
-    def add_command(self, command_name: str, action, help_message: str= '', args_description: str=None):
+    def add_command(self, command_name: str, action: Callable, help_message: str= '', args_description: str=None):
         if command_name in self.commands:
             raise ValueError('duplicate command {0}'.format(command_name))
         elif ' ' in command_name:
