@@ -33,11 +33,11 @@ def create_app(config: Dict = None) -> Flask:
                 logger.info(f'Accepting confirmation {request.data} with {app.config["confirmation_code"]}')
                 return app.config["confirmation_code"]
             else:
-                logger.warning('Refusing confirmation {}'.format(request.data))
+                logger.warning(f'Refusing confirmation {request.data}')
                 abort(400)
                 return
         elif vk_json['type'] == 'message_new':
-            logger.info('Got message from vk: {}'.format(json.dumps(vk_json['object'])))
+            logger.info(f'Got message from vk: {vk_json["object"]}')
             handlers.handle_vk_message(vk_json['object'])
             return 'ok'
 
