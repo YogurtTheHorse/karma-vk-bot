@@ -3,6 +3,8 @@ import json
 from typing import Dict
 
 import logging
+
+import mongoengine
 from flask import Flask, request, abort
 
 import handlers
@@ -71,4 +73,5 @@ if __name__ == '__main__':
     #  Converts to dict all public members
     app = create_app({k: v for k, v in args.__dict__.items() if not k.startswith('_')})
 
+    mongoengine.connect()
     app.run(host='0.0.0.0', port=args.port)
