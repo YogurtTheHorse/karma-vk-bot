@@ -74,6 +74,12 @@ if __name__ == '__main__':
                              dest='port',
                              default=7000,
                              help='Flask port')
+    args_parser.add_argument('--debug', '-d',
+                             const=True,
+                             default=False,
+                             action='store_const',
+                             dest='DEBUG',
+                             help='Enable debug')
 
     args = args_parser.parse_args()
     #  Converts to dict all public members
