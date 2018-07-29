@@ -1,18 +1,14 @@
 import argparse
-import json
 from typing import Dict
 
 import logging
 
 import mongoengine
 from flask import Flask, request, abort
-from vk_api import VkApi
 
 import handlers
 
 logger = logging.getLogger()
-vk_session = VkApi()
-vk = vk_session.get_api()
 
 
 def create_app(config: Dict = None) -> Flask:
@@ -85,8 +81,7 @@ if __name__ == '__main__':
     #  Converts to dict all public members
     app = create_app({k: v for k, v in args.__dict__.items() if not k.startswith('_')})
 
-    vk_session = VkApi(token=args.vk_token)
-    vk = vk_session.get_api()
+    handlers.set_token(args.vk_token)
 
     mongoengine.connect()
     app.run(host='0.0.0.0', port=args.port)

@@ -1,13 +1,22 @@
 import logging
 from typing import Dict
 
-import main
+from vk_api import VkApi
+
 from database_models import ChatData
 from message_parser import MessageParser
 
 logger = logging.getLogger('handlers')
 
 message_parser = MessageParser(command_symbol='/')
+
+vk = None
+
+
+def set_token(token: str):
+    global vk
+    vk_session = VkApi(token=token)
+    vk = vk_session.get_api()
 
 
 def show_stats(message: Dict, chat_data: ChatData):
@@ -57,4 +66,4 @@ def handle_vk_message(message: Dict):
     if answer is None:
         return
 
-    main.vk.messages.send(peer_id=message['from_id'], message=answer)
+    vk.messages.send(peer_id=message['from_id'], message=answer)
