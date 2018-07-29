@@ -12,7 +12,7 @@ import handlers
 
 logger = logging.getLogger()
 vk_session = VkApi()
-vk = VkApi.get_api()
+vk = vk_session.get_api()
 
 
 def create_app(config: Dict = None) -> Flask:
