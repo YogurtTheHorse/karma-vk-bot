@@ -58,7 +58,7 @@ if __name__ == '__main__':
                              help='VK group id')
     args_parser.add_argument('--vk_confirmation_code', '-c',
                              type=str,
-                             dest='vk_confirmation_code',
+                             dest='confirmation_code',
                              required=True,
                              help='VK confirmation code')
     args_parser.add_argument('--port', '-p',
