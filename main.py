@@ -6,10 +6,12 @@ import logging
 
 import mongoengine
 from flask import Flask, request, abort
+from vk_api import VkApi
 
 import handlers
 
 logger = logging.getLogger()
+vk = VkApi()
 
 
 def create_app(config: Dict = None) -> Flask:
@@ -46,6 +48,11 @@ def create_app(config: Dict = None) -> Flask:
 
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser(description='Karma bot for vk')
+    args_parser.add_argument('--vk_token', '-t',
+                             type=str,
+                             dest='vk_token',
+                             required=True,
+                             help='VK secret')
     args_parser.add_argument('--vk_secret', '-s',
                              type=str,
                              dest='vk_secret',
@@ -71,5 +78,6 @@ if __name__ == '__main__':
     #  Converts to dict all public members
     app = create_app({k: v for k, v in args.__dict__.items() if not k.startswith('_')})
 
+    vk = VkApi(token=args.vk_token)
     mongoengine.connect()
     app.run(host='0.0.0.0', port=args.port)
