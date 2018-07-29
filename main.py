@@ -8,9 +8,7 @@ import mongoengine
 from flask import Flask, request, abort
 
 import handlers
-from message_parser import MessageParser
 
-message_parser = MessageParser(command_symbol='/')
 logger = logging.getLogger()
 
 
