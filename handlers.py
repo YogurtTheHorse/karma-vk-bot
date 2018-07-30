@@ -82,7 +82,10 @@ def handle_vk_message(message: Dict):
     chat_data = ChatData.get_or_default(message['peer_id'])
 
     try:
-        chat_members = vk.messages.get_conversation_members
+        chat_members = vk.messages.get_conversation_members(
+            peer_id=message['peer_id'],
+            fields='screen_name'
+        )
 
         chat_data.user_infos = [
             UserInfo(user_id=profile['id'],
