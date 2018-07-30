@@ -66,4 +66,4 @@ def handle_vk_message(message: Dict):
     if answer is None:
         return
 
-    vk.messages.send(peer_id=message['from_id'], message=answer)
+    vk.messages.send(peer_id=message['peer_id'], message=answer)
