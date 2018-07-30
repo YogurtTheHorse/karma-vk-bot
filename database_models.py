@@ -21,7 +21,7 @@ class ChatData(Document):
     @classmethod
     def get_or_default(cls, chat_id: int):
         try:
-            cls.objects.get(chat_id=chat_id)
+            return cls.objects.get(chat_id=chat_id)
         except DoesNotExist:
             return ChatData(chat_id=chat_id)
 
