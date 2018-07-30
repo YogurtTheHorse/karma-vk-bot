@@ -104,6 +104,8 @@ def handle_vk_message(message: Dict):
         ]
     except ApiError:
         logging.warning(f'Not an admin in chat {message["peer_id"]} :(')
+        vk.messages.send(peer_id=message['peer_id'], message='not an admin :c')
+        return 
 
     chat_data.save()
 
