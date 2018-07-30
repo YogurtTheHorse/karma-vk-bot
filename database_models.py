@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import datetime
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from mongoengine import Document, IntField, ReferenceField, StringField, DoesNotExist, EmbeddedDocumentListField, \
     EmbeddedDocument, DateTimeField
@@ -82,3 +82,24 @@ class KarmaUpdate(Document):
             resulted_dict[karma['_id']] = karma['karma']
 
         return resulted_dict
+
+    @classmethod
+    def count_today_karma_in_chat(cls, chat: ChatData, from_id: int) -> Tuple[int, int]:
+        aggregation = list(cls.objects.aggregate(
+            {'$match': {
+                'chat': chat.id,
+                'from_id': from_id,
+                'update_time': {
+                    '$gt': datetime.datetime.combine(datetime.date.today(), datetime.time(0))
+                }
+            }},
+            {'$group': {
+                '_id': '$update_type',
+                'count': {'$sum': 1}
+            }}
+        ))
+
+        increases = next((a['count'] for a in aggregation if a['_id'] == 'increase'), 0)
+        decreases = next((a['count'] for a in aggregation if a['_id'] == 'decrease'), 0)
+
+        return increases, decreases
