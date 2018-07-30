@@ -38,7 +38,7 @@ class KarmaUpdate(Document):
     from_id = IntField(required=True)
     update_type = StringField(required=True, choices=['increase', 'decrease'])
 
-    update_time = DateTimeField(default=datetime.datetime.now())
+    update_time = DateTimeField(default=datetime.datetime.now)
 
     @classmethod
     def _new_update(cls, chat: ChatData, user_id: int, from_id: int, update_type: str):
