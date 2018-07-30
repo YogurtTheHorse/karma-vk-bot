@@ -1,10 +1,17 @@
 from collections import OrderedDict
 
-from mongoengine import Document, IntField, ReferenceField, StringField
+from mongoengine import Document, IntField, ReferenceField, StringField, DoesNotExist
 
 
 class ChatData(Document):
     chat_id = IntField(required=True)
+
+    @classmethod
+    def get_or_default(cls, chat_id: int):
+        try:
+            cls.objects.get(chat_id=chat_id)
+        except DoesNotExist:
+            return ChatData(chat_id=chat_id)
 
 
 class KarmaUpdate(Document):
