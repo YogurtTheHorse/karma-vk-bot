@@ -1,9 +1,9 @@
 import logging
 from typing import Dict
 
-from vk_api import VkApi
+from vk_api import VkApi, ApiError
 
-from database_models import ChatData
+from database_models import ChatData, KarmaUpdate, UserInfo
 from message_parser import MessageParser
 
 logger = logging.getLogger('handlers')
@@ -19,16 +19,41 @@ def set_token(token: str):
     vk = vk_session.get_api()
 
 
+def get_user_id(user_data: str) -> str:
+    return ''.join(c for c in user_data.split('|')[0] if c.isdigit()) or 0
+
+
 def show_stats(message: Dict, chat_data: ChatData):
-    return 's'
+    stats = KarmaUpdate.get_statistics(chat_data)
+
+    if len(stats) == 0:
+        return 'No karma here'
+
+    names = chat_data.get_names()
+
+    karma_string = '\n'.join(
+        f'{names[user_id]}: {stats[user_id]}'
+        for user_id in stats
+        if user_id in names
+    )
+
+    return f'Karma is here.\n\n{karma_string}'
 
 
-def give_karma(message: Dict, chat_data: ChatData):
-    return 'g'
+def give_karma(message: Dict, chat_data: ChatData, user_data: str):
+    user_id = get_user_id(user_data)
+
+    KarmaUpdate.give_karma(chat_data, int(user_id), message['from_id'])
+
+    return 'ok'
 
 
-def remove_karma(message: Dict, chat_data: ChatData):
-    return 'r'
+def remove_karma(message: Dict, chat_data: ChatData, user_data: str):
+    user_id = get_user_id(user_data)
+
+    KarmaUpdate.take_karma(chat_data, int(user_id), message['from_id'])
+
+    return 'ok'
 
 
 message_parser.add_command(
@@ -39,12 +64,14 @@ message_parser.add_command(
 message_parser.add_command(
     'karma',
     action=give_karma,
-    help_message='Adds karma'
+    help_message='Adds karma',
+    args_description='id or mention'
 )
 message_parser.add_command(
     'dekarm',
     action=remove_karma,
-    help_message='Decreases karma'
+    help_message='Decreases karma',
+    args_description='id or mention'
 )
 
 
@@ -52,12 +79,28 @@ def handle_vk_message(message: Dict):
     logger.debug(f'Got message {message}.')
 
     answer = None
+    chat_data = ChatData.get_or_default(message['peer_id'])
+
+    try:
+        chat_members = vk.messages.get_conversation_members
+
+        chat_data.user_infos = [
+            UserInfo(user_id=profile['id'],
+                     name=f'{profile["first_name"]} {profile["last_name"]}',
+                     nickname=profile.get('screen_name', ''))
+            for profile in chat_members['profiles']
+        ]
+    except ApiError:
+        logging.warning(f'Not an admin in chat {message["peer_id"]} :(')
+
+    chat_data.save()
+
     try:
         res = message_parser.parse(message['text'])
         if res is not None:
             action, args = res
 
-            answer = action(message, None, *args)
+            answer = action(message, chat_data, *args)
     except ValueError as e:
         answer = f'Error at parsing: {e}'
     except Exception as e:
