@@ -70,6 +70,11 @@ if __name__ == '__main__':
                              dest='port',
                              default=7000,
                              help='Flask port')
+    args_parser.add_argument('--database', '-D',
+                             type=str,
+                             dest='database_name',
+                             default='karma',
+                             help='Name of MongoDB database')
     args_parser.add_argument('--debug', '-d',
                              const=True,
                              default=False,
@@ -83,5 +88,5 @@ if __name__ == '__main__':
 
     handlers.set_token(args.vk_token)
 
-    mongoengine.connect()
+    mongoengine.connect(args.database_name)
     app.run(host='0.0.0.0', port=args.port)
