@@ -41,19 +41,28 @@ def show_stats(message: Dict, chat_data: ChatData):
 
 
 def give_karma(message: Dict, chat_data: ChatData, user_data: str):
-    user_id = get_user_id(user_data)
+    increases, decreases = KarmaUpdate.count_today_karma_in_chat(chat_data, message['from_id'])
 
-    KarmaUpdate.give_karma(chat_data, int(user_id), message['from_id'])
+    if increases < 3:
+        user_id = get_user_id(user_data)
 
-    return 'ok'
+        KarmaUpdate.give_karma(chat_data, int(user_id), message['from_id'])
+        return 'ok'
+    else:
+        return 'maybe tomorrow.'
 
 
+# TODO: Remove code duplication
 def remove_karma(message: Dict, chat_data: ChatData, user_data: str):
-    user_id = get_user_id(user_data)
+    increases, decreases = KarmaUpdate.count_today_karma_in_chat(chat_data, message['from_id'])
 
-    KarmaUpdate.take_karma(chat_data, int(user_id), message['from_id'])
+    if decreases < 3:
+        user_id = get_user_id(user_data)
 
-    return 'ok'
+        KarmaUpdate.take_karma(chat_data, int(user_id), message['from_id'])
+        return 'ok'
+    else:
+        return 'maybe tomorrow.'
 
 
 message_parser.add_command(
