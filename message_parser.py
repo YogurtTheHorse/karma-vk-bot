@@ -1,5 +1,5 @@
 from typing import Callable
-from re import findall
+from re
 
 
 class CommandDescription:
@@ -11,9 +11,12 @@ class CommandDescription:
 
 
 class MessageParser(object):
+    
     def __init__(self, command_symbol: str='/'):
-        self.command_symbol = command_symbol
+        self.args_regex = re.compile(r'(?:\[id\d*|.*\]|\S)+')
 
+        self.command_symbol = command_symbol
+    
         self.commands = {}
 
         self.add_command('help', action=self.list_commands, help_message='Lists all commands')
@@ -44,10 +47,10 @@ class MessageParser(object):
         if not message.startswith(self.command_symbol):
             return None
         
-        message = findall(r'(?:\{[\s\S]*?\}|\[[\s\S]*?\]|"[\s\S]*?"|\S)+', message[len(self.command_symbol):])
+        message_parts = self.args_regex.findall(message[len(self.command_symbol):])
 
         try:
-            command_name = message[0]
+            command_name = message_parts[0]
         except IndexError:
             raise ValueError('Can\'t parse command name')
 
@@ -55,6 +58,6 @@ class MessageParser(object):
             raise ValueError('No such command: {0}'.format(command_name))
 
         command_description = self.commands[command_name]
-        command_args = message[1:]
+        command_args = message_parts[1:]
 
         return command_description.action, command_args
