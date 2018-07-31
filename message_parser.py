@@ -13,7 +13,7 @@ class CommandDescription:
 class MessageParser(object):
     
     def __init__(self, command_symbol: str='/'):
-        self.args_regex = re.compile(r'(?:\[id\d*|.*\]|\S)+')
+        self.args_regex = re.compile(r'(?:\[id\d+\|.*\]|\S)+')
 
         self.command_symbol = command_symbol
     

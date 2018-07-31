@@ -20,7 +20,7 @@ def set_token(token: str):
     vk_session = VkApi(token=token)
     vk = vk_session.get_api()
 
-reference_to_id_regex = re.compile(r'^(?:\[id(\d+)\|.*\])$')
+reference_to_id_regex = re.compile(r'^\[id(\d+)\|.*\]$')
 
 def get_user_id(user_data: str) -> str:
     ret, count = reference_to_id_regex.subn(r'\1', user_data)
