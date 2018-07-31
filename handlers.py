@@ -6,6 +6,8 @@ from vk_api import VkApi, ApiError
 from database_models import ChatData, KarmaUpdate, UserInfo
 from message_parser import MessageParser
 
+import re
+
 logger = logging.getLogger('handlers')
 
 message_parser = MessageParser(command_symbol='/')
@@ -18,9 +20,15 @@ def set_token(token: str):
     vk_session = VkApi(token=token)
     vk = vk_session.get_api()
 
+reference_to_id_regex = re.compile(r'^(?:\[id(\d+)\|.*\])$')
 
 def get_user_id(user_data: str) -> str:
-    return ''.join(c for c in user_data.split('|')[0] if c.isdigit()) or 0
+    ret, count = reference_to_id_regex.subn(r'\1', user_data)
+    
+    if count < 1:
+        raise ValueError('User data has not user id')
+    
+    return ret
 
 
 def show_stats(message: Dict, chat_data: ChatData):
